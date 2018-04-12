@@ -1,4 +1,3 @@
-//55555555555555555555555555
 #include <LiquidCrystal_I2C.h>
 #include <LCD.h>
 #include <DHT.h>
@@ -48,6 +47,7 @@ void loop() {
   float humid_2 = analogRead(A1);
   float temperature_air = dht.getTemperature();
 
+
   if(percentage() <= 2.25 && percentage() >= 0){
     for(int wait=0; wait<600; wait++){
       float temperature_air = dht.getTemperature();
@@ -70,7 +70,7 @@ void loop() {
   }
   
   else if (percentage() <= 41.25 && percentage() >= 2.35){
-    for(int wait=0; wait<500; wait++){
+    for(int wait=0; wait<600; wait++){
       float temperature_air = dht.getTemperature();
       if((millis() - timer1) >= 1000){
       print_humid("Low : ", percentage(), "%");
@@ -79,7 +79,7 @@ void loop() {
       }
       digitalWrite(PIN8_PumpSoil,HIGH);
     }
-    for(int wait=0; wait<1000; wait++){
+    for(int wait=0; wait<400; wait++){
       float temperature_air = dht.getTemperature();
       if((millis() - timer1) >= 1000){
       print_humid("Low : ", percentage(), "%");
@@ -90,7 +90,7 @@ void loop() {
     }
   }
   else if (percentage() <= 50.05 && percentage() >= 41.35){
-    for(int wait=0; wait<500; wait++){
+    for(int wait=0; wait<600; wait++){
       float temperature_air = dht.getTemperature();
       if((millis() - timer1) >= 1000){
       print_humid("Normal : ", percentage(), "%");
@@ -99,7 +99,7 @@ void loop() {
       }
       digitalWrite(PIN8_PumpSoil,HIGH);
     }
-    for(int wait=0; wait<1000; wait++){
+    for(int wait=0; wait<400; wait++){
       float temperature_air = dht.getTemperature();
       if((millis() - timer1) >= 1000){
       print_humid("Normal : ", percentage(), "%");
@@ -124,6 +124,15 @@ void loop() {
       timer1 = millis();
     }
     digitalWrite(PIN8_PumpSoil,LOW);
+  }
+
+  if(temperature_air > 37){
+    for(int wait=0; wait<600; wait++){
+      digitalWrite(PIN9_PumpSpray,HIGH);
+    }
+    for(int wait=0; wait<400; wait++){
+      digitalWrite(PIN9_PumpSpray,LOW);
+    }
   }
 delay(1000);
 }
