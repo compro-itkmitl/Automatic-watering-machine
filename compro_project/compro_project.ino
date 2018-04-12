@@ -15,6 +15,7 @@
   DHT dht;
   
   unsigned long timer1;
+  unsigned long timer2;
   
 void setup(){
   Serial.begin(9600);
@@ -24,6 +25,7 @@ void setup(){
   pinMode(PIN9_PumpSpray, OUTPUT);
 
   timer1 = 0;
+  timer2 = 0;
 
   
   dht.setup(4);
@@ -47,7 +49,18 @@ void loop() {
   float humid_2 = analogRead(A1);
   float temperature_air = dht.getTemperature();
 
-
+  if((millis() - timer2) >= 5000){
+    if(temperature_air > 37){
+      for(int wait=0; wait<600; wait++){
+        digitalWrite(PIN9_PumpSpray,HIGH);
+      }
+      for(int wait=0; wait<400; wait++){
+        digitalWrite(PIN9_PumpSpray,LOW);
+      }
+    }
+    timer1 = millis();
+  }
+      
   if(percentage() <= 2.25 && percentage() >= 0){
     for(int wait=0; wait<600; wait++){
       float temperature_air = dht.getTemperature();
@@ -124,15 +137,6 @@ void loop() {
       timer1 = millis();
     }
     digitalWrite(PIN8_PumpSoil,LOW);
-  }
-
-  if(temperature_air > 37){
-    for(int wait=0; wait<600; wait++){
-      digitalWrite(PIN9_PumpSpray,HIGH);
-    }
-    for(int wait=0; wait<400; wait++){
-      digitalWrite(PIN9_PumpSpray,LOW);
-    }
   }
 delay(1000);
 }
