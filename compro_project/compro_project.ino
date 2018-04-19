@@ -11,11 +11,11 @@
   #define PIN8_PumpSoil 8  //pin 8
   #define PIN9_PumpSpray 9 //pin 9
     
-  LiquidCrystal_I2C lcd(0x27,2,1,0,4,5,6,7,3,POSITIVE);
-  DHT dht;
+  LiquidCrystal_I2C lcd(0x3F,2,1,0,4,5,6,7,3,POSITIVE);
+
+  unsigned long timer;
   
-  unsigned long timer1;
-  unsigned long timer2;
+  DHT dht;
   
 void setup(){
   Serial.begin(9600);
@@ -24,10 +24,6 @@ void setup(){
   pinMode(PIN8_PumpSoil, OUTPUT);
   pinMode(PIN9_PumpSpray, OUTPUT);
 
-  timer1 = 0;
-  timer2 = 0;
-
-  
   dht.setup(4);
 
   //Turn OFF any power to the Relay channels
@@ -36,9 +32,11 @@ void setup(){
   digitalWrite(PIN9_PumpSpray,HIGH);
   delay(1000); //Wait 1 seconds before starting sequence
 
+  timer = 0;
+
   lcd.begin (16,2);
   lcd.setCursor(0,0);
-  lcd.print("System Begin");
+  lcd.print("  System Begin");
   delay(2000);
   lcd.clear();
 } 
@@ -48,110 +46,112 @@ void loop() {
   float humid_1 = analogRead(A0);
   float humid_2 = analogRead(A1);
   float temperature_air = dht.getTemperature();
-
-  if((millis() - timer2) >= 5000){
-    if(temperature_air > 37){
-      for(int wait=0; wait<600; wait++){
-        digitalWrite(PIN9_PumpSpray,HIGH);
-      }
-      for(int wait=0; wait<400; wait++){
-        digitalWrite(PIN9_PumpSpray,LOW);
-      }
-    }
-    timer1 = millis();
-  }
       
   if(percentage() <= 2.25 && percentage() >= 0){
-    for(int wait=0; wait<600; wait++){
+    for(int wait=0; wait<1000; wait++){
       float temperature_air = dht.getTemperature();
-      if((millis() - timer1) >= 1000){
-      print_humid("Dry : ", percentage(), "%");
-      print_temp("Temperature : ", temperature_air, "C");
-      timer1 = millis();
-      }
-      digitalWrite(PIN8_PumpSoil,HIGH);
-    }
-    for(int wait=0; wait<400; wait++){
-      float temperature_air = dht.getTemperature();
-      if((millis() - timer1) >= 1000){
-      print_humid("Dry : ", percentage(), "%");
-      print_temp("Temperature : ", temperature_air, "C");
-      timer1 = millis();
+      if((millis() - timer ) >= 1000){
+        lcd.clear();
+        print_humid("Dry : ", percentage(), "%");
+        print_temp("Temp : ", temperature_air, "C");
+        timer = millis();
       }
       digitalWrite(PIN8_PumpSoil,LOW);
+      Serial.println(wait);
+    }
+    
+    for(int wait=0; wait<1000; wait++){
+      float temperature_air = dht.getTemperature();
+      if((millis() - timer ) >= 1000){
+        lcd.clear();
+        print_humid("Dry : ", percentage(), "%");
+        print_temp("Temp : ", temperature_air, "C");
+        timer = millis();
+      }
+      digitalWrite(PIN8_PumpSoil,HIGH);
+      Serial.println(wait);
     }
   }
   
   else if (percentage() <= 41.25 && percentage() >= 2.35){
-    for(int wait=0; wait<600; wait++){
+    for(int wait=0; wait<1000; wait++){
       float temperature_air = dht.getTemperature();
-      if((millis() - timer1) >= 1000){
-      print_humid("Low : ", percentage(), "%");
-      print_temp("Temperature : ", temperature_air, "C");
-      timer1 = millis();
-      }
-      digitalWrite(PIN8_PumpSoil,HIGH);
-    }
-    for(int wait=0; wait<400; wait++){
-      float temperature_air = dht.getTemperature();
-      if((millis() - timer1) >= 1000){
-      print_humid("Low : ", percentage(), "%");
-      print_temp("Temperature : ", temperature_air, "C");
-      timer1 = millis();
+      if((millis() - timer ) >= 1000){
+        lcd.clear();
+        print_humid("Low : ", percentage(), "%");
+        print_temp("Temp : ", temperature_air, "C");
+        timer = millis();
       }
       digitalWrite(PIN8_PumpSoil,LOW);
+      Serial.println(wait);
+    }
+    for(int wait=0; wait<1000; wait++){
+      float temperature_air = dht.getTemperature();
+      if((millis() - timer ) >= 1000){
+        lcd.clear();
+        print_humid("Low : ", percentage(), "%");
+        print_temp("Temp : ", temperature_air, "C");
+        timer = millis();
+      }
+      digitalWrite(PIN8_PumpSoil,HIGH);
+      Serial.println(wait);
     }
   }
   else if (percentage() <= 50.05 && percentage() >= 41.35){
-    for(int wait=0; wait<600; wait++){
+    for(int wait=0; wait<1000; wait++){
       float temperature_air = dht.getTemperature();
-      if((millis() - timer1) >= 1000){
-      print_humid("Normal : ", percentage(), "%");
-      print_temp("Temperature : ", temperature_air, "C");
-      timer1 = millis();
-      }
-      digitalWrite(PIN8_PumpSoil,HIGH);
-    }
-    for(int wait=0; wait<400; wait++){
-      float temperature_air = dht.getTemperature();
-      if((millis() - timer1) >= 1000){
-      print_humid("Normal : ", percentage(), "%");
-      print_temp("Temperature : ", temperature_air, "C");
-      timer1 = millis();
+      if((millis() - timer ) >= 1000){
+        lcd.clear();
+        print_humid("Normal : ", percentage(), "%");
+        print_temp("Temp : ", temperature_air, "C");
+        timer = millis();
       }
       digitalWrite(PIN8_PumpSoil,LOW);
+      Serial.println(wait);
+      
+    }
+    for(int wait=0; wait<1000; wait++){
+      float temperature_air = dht.getTemperature();
+      if((millis() - timer ) >= 1000){
+        lcd.clear();
+        print_humid("Normal : ", percentage(), "%");
+        print_temp("Temp : ", temperature_air, "C");
+        timer = millis();
+      }
+      digitalWrite(PIN8_PumpSoil,HIGH);
+      Serial.println(wait);
     }
   }
   else if (percentage() <= 56.01 && percentage() >= 50.15){
-    if((millis() - timer1) >= 1000){
+    if((millis() - timer ) >= 1000){
+      lcd.clear();
       print_humid("Good : ", percentage(), "%");
-      print_temp("Temperature : ", temperature_air, "C");
-      timer1 = millis();
+      print_temp("Temp : ", temperature_air, "C");
+      timer = millis();
     }
-    digitalWrite(PIN8_PumpSoil,LOW);
+    digitalWrite(PIN8_PumpSoil,HIGH);
   }
   else{
-    if((millis() - timer1) >= 1000){
+    if((millis() - timer ) >= 1000){
+      lcd.clear();
       print_humid("Over : ", percentage(), "%");
-      print_temp("Temperature : ", temperature_air, "C");
-      timer1 = millis();
+      print_temp("Temp : ", temperature_air, "C");
+      timer = millis();
     }
-    digitalWrite(PIN8_PumpSoil,LOW);
+    digitalWrite(PIN8_PumpSoil,HIGH);
   }
 delay(1000);
 }
 
 int print_humid(String sta, float h, String sign) {
-  //lcd.setCursor(0,0);
-  //lcd.clear();
-  //lcd.print(sta + h + sign);
+  lcd.setCursor(0,0);
+  lcd.print(sta + h + sign);
   Serial.println(sta + h + sign);
 }
 
 int print_temp(String temp, float t, String sign){
-  //lcd.setCursor(0,1);
-  //lcd.clear();
-  //lcd.print(temp + t + sign);
+  lcd.setCursor(0,1);
+  lcd.print(temp + t + ((char)223) + sign);
   Serial.println(temp + t + sign);
 }
 
