@@ -4,7 +4,6 @@
 #include <Wire.h>
 
   //LCD Module Setup
-  #define I2C_ADDR 0x27 // ตำแหน่งของ I2C
   #define BACKLIGHT_PIN 3
     
   //Define Pin For Relay
@@ -46,7 +45,7 @@ void loop() {
   float humid_1 = analogRead(A0);
   float humid_2 = analogRead(A1);
   float temperature_air = dht.getTemperature();
-      
+  
   if(percentage() <= 2.25 && percentage() >= 0){
     for(int wait=0; wait<1000; wait++){
       float temperature_air = dht.getTemperature();
@@ -58,6 +57,9 @@ void loop() {
       }
       digitalWrite(PIN8_PumpSoil,LOW);
       Serial.println(wait);
+      if(percentage() > 2.25){
+        break;
+      }
     }
     
     for(int wait=0; wait<1000; wait++){
@@ -70,6 +72,9 @@ void loop() {
       }
       digitalWrite(PIN8_PumpSoil,HIGH);
       Serial.println(wait);
+      if(percentage() > 2.25){
+        break;
+      }
     }
   }
   
@@ -84,6 +89,9 @@ void loop() {
       }
       digitalWrite(PIN8_PumpSoil,LOW);
       Serial.println(wait);
+      if(percentage() > 41.25){
+        break;
+      }
     }
     for(int wait=0; wait<1000; wait++){
       float temperature_air = dht.getTemperature();
@@ -95,8 +103,12 @@ void loop() {
       }
       digitalWrite(PIN8_PumpSoil,HIGH);
       Serial.println(wait);
+      if(percentage() > 41.25){
+        break;
+      }
     }
   }
+  
   else if (percentage() <= 50.05 && percentage() >= 41.35){
     for(int wait=0; wait<1000; wait++){
       float temperature_air = dht.getTemperature();
@@ -108,8 +120,11 @@ void loop() {
       }
       digitalWrite(PIN8_PumpSoil,LOW);
       Serial.println(wait);
-      
+      if(percentage() > 50.05){
+        break;
+      }
     }
+    
     for(int wait=0; wait<1000; wait++){
       float temperature_air = dht.getTemperature();
       if((millis() - timer ) >= 1000){
@@ -120,8 +135,12 @@ void loop() {
       }
       digitalWrite(PIN8_PumpSoil,HIGH);
       Serial.println(wait);
+      if(percentage() > 50.05){
+        break;
+      }
     }
   }
+  
   else if (percentage() <= 56.01 && percentage() >= 50.15){
     if((millis() - timer ) >= 1000){
       lcd.clear();
@@ -131,6 +150,7 @@ void loop() {
     }
     digitalWrite(PIN8_PumpSoil,HIGH);
   }
+  
   else{
     if((millis() - timer ) >= 1000){
       lcd.clear();
@@ -140,7 +160,34 @@ void loop() {
     }
     digitalWrite(PIN8_PumpSoil,HIGH);
   }
-delay(1000);
+  //End Algo Watering Soil
+
+  //Algo Watering Spray
+  if(temperature_air > 36){
+    for(int wait=0; wait<1000; wait++){
+      float temperature_air = dht.getTemperature();
+      if((millis() - timer ) >= 1000){
+        lcd.clear();
+        print_humid("Normal : ", percentage(), "%");
+        print_temp("Temp : ", temperature_air, "C");
+        timer = millis();
+      }
+      digitalWrite(PIN9_PumpSpray,LOW);
+      Serial.println(wait);
+    }
+    for(int wait=0; wait<1000; wait++){
+      float temperature_air = dht.getTemperature();
+      if((millis() - timer ) >= 1000){
+        lcd.clear();
+        print_humid("Normal : ", percentage(), "%");
+        print_temp("Temp : ", temperature_air, "C");
+        timer = millis();
+      }
+      digitalWrite(PIN9_PumpSpray,HIGH);
+      Serial.println(wait);
+    }
+  }
+delay(500);
 }
 
 int print_humid(String sta, float h, String sign) {
