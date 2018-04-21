@@ -10,7 +10,7 @@
 SoftwareSerial Node(D1,D2); //(RX,TX)
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   Node.begin(4800);
 
   pinMode(D1, INPUT);
