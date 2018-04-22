@@ -16,8 +16,9 @@
   LiquidCrystal_I2C lcd(0x3F,2,1,0,4,5,6,7,3,POSITIVE);
 
   int wait;
-
-
+  float humidPIN_1 = A0;
+  float humidPIN_2 = A1;
+  float temperature_air, soil_1, soil_2;
   unsigned long timer;
   unsigned long timer2;
   
@@ -53,13 +54,13 @@ void setup(){
 
 void loop() {
   //Begin Module Humidty, Temperature
-  float humid_1 = analogRead(A0);
-  float humid_2 = analogRead(A1);
-  float temperature_air = dht.getTemperature();
+  soil_1 = analogRead(humidPIN_1);
+  soil_2 = analogRead(humidPIN_2);
+  temperature_air = dht.getTemperature();
 
-  ArduinoSerial.print(humid_1);
+  ArduinoSerial.print(soil_1);
   ArduinoSerial.print('\n');
-  ArduinoSerial.print(humid_2);
+  ArduinoSerial.print(soil_2);
   ArduinoSerial.print('\n');
   ArduinoSerial.print(percentage());
   ArduinoSerial.print('\n');
@@ -68,7 +69,7 @@ void loop() {
   
   if(percentage() <= 2.25 && percentage() >= 0){
     for(wait=0; wait<800; wait++){
-      float temperature_air = dht.getTemperature();
+      temperature_air = dht.getTemperature();
       if((millis() - timer ) >= 1000){
         lcd.clear();
         print_humid("Dry : ", percentage(), "%");
@@ -80,7 +81,7 @@ void loop() {
     }
     
     for(wait=0; wait<3000; wait++){
-      float temperature_air = dht.getTemperature();
+      temperature_air = dht.getTemperature();
       if((millis() - timer ) >= 1000){
         lcd.clear();
         print_humid("Dry : ", percentage(), "%");
@@ -94,7 +95,7 @@ void loop() {
   
   else if (percentage() <= 41.25 && percentage() >= 2.35){
     for(wait=0; wait<800; wait++){
-      float temperature_air = dht.getTemperature();
+      temperature_air = dht.getTemperature();
       if((millis() - timer ) >= 1000){
         lcd.clear();
         print_humid("Low : ", percentage(), "%");
@@ -105,7 +106,7 @@ void loop() {
       Serial.println(wait);
     }
     for(wait=0; wait<3000; wait++){
-      float temperature_air = dht.getTemperature();
+      temperature_air = dht.getTemperature();
       if((millis() - timer ) >= 1000){
         lcd.clear();
         print_humid("Low : ", percentage(), "%");
@@ -119,7 +120,7 @@ void loop() {
   
   else if (percentage() <= 50.05 && percentage() >= 41.35){
     for(wait=0; wait<800; wait++){
-      float temperature_air = dht.getTemperature();
+      temperature_air = dht.getTemperature();
       if((millis() - timer ) >= 1000){
         lcd.clear();
         print_humid("Normal : ", percentage(), "%");
@@ -131,7 +132,7 @@ void loop() {
     }
     
     for(wait=0; wait<3000; wait++){
-      float temperature_air = dht.getTemperature();
+      temperature_air = dht.getTemperature();
       if((millis() - timer ) >= 1000){
         lcd.clear();
         print_humid("Normal : ", percentage(), "%");
@@ -197,9 +198,9 @@ int print_temp(String temp, float t, String sign){
 }
 
 float percentage(){
-  float humid_1 = analogRead(A0);
-  float humid_2 = analogRead(A1);
-  float average = ((humid_1 + humid_2) / 2);
+  soil_1 = analogRead(humidPIN_1);
+  soil_2 = analogRead(humidPIN_2);
+  float average = ((soil_1 + soil_2) / 2);
   float percent = (abs(abs(((average / 1023) * 100) - 100)));
   return percent;
 }
