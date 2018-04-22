@@ -37,12 +37,18 @@ void setup() {
   Serial.println("");
 
   Firebase.begin(FIREBASE_HOST, FIREBASE_KEY);
-  Firebase.setFloat("Sensor/Humidity/Humid 1",0);
-  Firebase.setFloat("Sensor/Humidity/Humid 2",0);
-  Firebase.setFloat("Sensor/Humidity/Percentage",0);
-  Firebase.setFloat("Sensor/Temperature/Temperature",0);
-  Firebase.setString("Sensor/Humidity/Time","");
-  Firebase.setString("Sensor/Temperature/Time","");
+  Firebase.setFloat("Humidity/Humidity/Humid 1",0);
+  Firebase.setFloat("Humidity/Humidity/Humid 2",0);
+  Firebase.setFloat("Humidity/Humidity/Percentage",0);
+  Firebase.setString("Humidity/Humidity/Time","");
+  Firebase.setFloat("Temperature/Temperature/Temperature",0);
+  Firebase.setString("Temperature/Temperature/Time","");
+
+  Firebase.setFloat("All Value/Humid 1",0);
+  Firebase.setFloat("All Value/Humid 2",0);
+  Firebase.setFloat("All Value/Percentage",0);
+  Firebase.setFloat("All Value/Temperature",0);
+  Firebase.setString("All Value/Time","");
 }
 
 void loop() {
@@ -56,12 +62,20 @@ void loop() {
     if(Node.read() == '\n'){
       time_t now = time(nullptr);
       String time1 = ctime(&now);
-      Firebase.setFloat("Sensor/Humidity/Humid 1",humid_1);
-      Firebase.setFloat("Sensor/Humidity/Humid 2",humid_2);
-      Firebase.setFloat("Sensor/Humidity/Percentage",percentage);
-      Firebase.setFloat("Sensor/Temperature/Temperature",temperature_air);
-      Firebase.setString("Sensor/Humidity/Time", time1);
-      Firebase.setString("Sensor/Temperature/Time",time1);
+      Firebase.setFloat("Humidity/Humid 1",humid_1);
+      Firebase.setFloat("Humidity/Humid 2",humid_2);
+      Firebase.setFloat("Humidity/Percentage",percentage);
+      Firebase.setString("Humidity/Time", time1);
+      Firebase.setFloat("Temperature/Temperature",temperature_air);
+      Firebase.setString("Temperature/Time",time1);
+
+      Firebase.setFloat("All Value/Humid 1",humid_1);
+      Firebase.setFloat("All Value/Humid 2",humid_2);
+      Firebase.setFloat("All Value/Percentage",percentage);
+      Firebase.setFloat("All Value/Temperature",temperature_air);
+      Firebase.setString("All Value/Time",time1);
+      
+      
 
       Serial.print("Humid 1: ");
       Serial.println(humid_1);
