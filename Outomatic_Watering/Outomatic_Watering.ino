@@ -57,7 +57,7 @@ void loop() {
   soil_1 = analogRead(humidPIN_1);
   soil_2 = analogRead(humidPIN_2);
   temperature_air = dht.getTemperature();
-
+  
   ArduinoSerial.print(soil_1);
   ArduinoSerial.print('\n');
   ArduinoSerial.print(soil_2);

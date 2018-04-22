@@ -3,8 +3,8 @@
 #include <ESP8266WiFi.h>
 #include <time.h>
 
-#define WIFI_ID        "Lerdsurut"
-#define WIFI_PASSWORD  "5316038285"
+#define WIFI_ID        "Clack01"
+#define WIFI_PASSWORD  "aibot2017"
 #define FIREBASE_HOST  "automatic-watering-32c2e.firebaseio.com"
 #define FIREBASE_KEY   "jHi7mtMoxRcTpwTGkbFk6WKTMyOv36EJzUp5pTjs"
 
@@ -27,7 +27,7 @@ void setup() {
   Serial.println();
   Serial.print("connected: ");
   Serial.println(WiFi.localIP());
-
+  
   configTime(timezone, dst, "pool.ntp.org", "time.nist.gov");
   Serial.println("\nLoading time");
   while (!time(nullptr)) {
@@ -37,11 +37,12 @@ void setup() {
   Serial.println("");
 
   Firebase.begin(FIREBASE_HOST, FIREBASE_KEY);
-  Firebase.setFloat("Humid 1",0);
-  Firebase.setFloat("Humid 2",0);
-  Firebase.setFloat("Percentage",0);
-  Firebase.setFloat("Temperature",0);
-  Firebase.setFloat("hour",0);
+  Firebase.setFloat("Sensor/Humidity/Humid 1",0);
+  Firebase.setFloat("Sensor/Humidity/Humid 2",0);
+  Firebase.setFloat("Sensor/Humidity/Percentage",0);
+  Firebase.setFloat("Sensor/Temperature/Temperature",0);
+  Firebase.setString("Sensor/Humidity/Time","");
+  Firebase.setString("Sensor/Temperature/Time","");
 }
 
 void loop() {
@@ -54,14 +55,13 @@ void loop() {
     
     if(Node.read() == '\n'){
       time_t now = time(nullptr);
-      struct tm* p_tm = localtime(&now);
-      Firebase.setFloat("Sensor/Humid 1",humid_1);
-      Firebase.setFloat("Sensor/Humid 2",humid_2);
-      Firebase.setFloat("Sensor/Percentage",percentage);
-      Firebase.setFloat("Sensor/Temperature",temperature_air);
-      Firebase.setFloat("Sensor/hour", p_tm->tm_hour);
-      Firebase.setFloat("Sensor/min",p_tm->tm_min);
-      Firebase.setFloat("Sensor/sec", p_tm->tm_sec);
+      String time1 = ctime(&now);
+      Firebase.setFloat("Sensor/Humidity/Humid 1",humid_1);
+      Firebase.setFloat("Sensor/Humidity/Humid 2",humid_2);
+      Firebase.setFloat("Sensor/Humidity/Percentage",percentage);
+      Firebase.setFloat("Sensor/Temperature/Temperature",temperature_air);
+      Firebase.setString("Sensor/Humidity/Time", time1);
+      Firebase.setString("Sensor/Temperature/Time",time1);
 
       Serial.print("Humid 1: ");
       Serial.println(humid_1);
@@ -71,6 +71,7 @@ void loop() {
       Serial.println(percentage);
       Serial.print("Temperature: ");
       Serial.println(temperature_air);
+      Serial.println(time1);
     }
   }
   delay(100);
