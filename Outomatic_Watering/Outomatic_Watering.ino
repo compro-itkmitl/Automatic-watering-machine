@@ -40,7 +40,6 @@ void setup(){
   digitalWrite(BACKLIGHT_PIN, HIGH);
   digitalWrite(PIN8_PumpSoil,HIGH);
   digitalWrite(PIN9_PumpSpray,HIGH);
-  delay(1000);
 
   timer = 0;
   timer2 = 0;
@@ -50,6 +49,7 @@ void setup(){
   lcd.print("  System Begin");
   delay(2000);
   lcd.clear();
+  delay(3000);
 } 
 
 void loop() {
@@ -57,15 +57,18 @@ void loop() {
   soil_1 = analogRead(humidPIN_1);
   soil_2 = analogRead(humidPIN_2);
   temperature_air = dht.getTemperature();
+  delay(500);
   
+  ArduinoSerial.print('\n');
   ArduinoSerial.print(soil_1);
   ArduinoSerial.print('\n');
   ArduinoSerial.print(soil_2);
   ArduinoSerial.print('\n');
-  ArduinoSerial.print(percentage());
-  ArduinoSerial.print('\n');
+  //ArduinoSerial.print(percentage());
+  //ArduinoSerial.print('\n');
   ArduinoSerial.print(temperature_air);
   ArduinoSerial.print('\n');
+  delay(500);
   
   if(percentage() <= 2.25 && percentage() >= 0){
     for(wait=0; wait<800; wait++){

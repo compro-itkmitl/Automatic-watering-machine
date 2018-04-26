@@ -37,50 +37,62 @@ void setup() {
   Serial.println("");
 
   Firebase.begin(FIREBASE_HOST, FIREBASE_KEY);
-  Firebase.setFloat("Humidity/Humidity/Humid 1",0);
-  Firebase.setFloat("Humidity/Humidity/Humid 2",0);
-  Firebase.setFloat("Humidity/Humidity/Percentage",0);
-  Firebase.setString("Humidity/Humidity/Time","");
-  Firebase.setFloat("Temperature/Temperature/Temperature",0);
-  Firebase.setString("Temperature/Temperature/Time","");
+  Firebase.setFloat("Humidity/Humid 1",0);
+  Firebase.setFloat("Humidity/Humid 2",0);
+  Firebase.setFloat("Humidity/Percentage",0);
+  Firebase.setString("Humidity/Time","");
+  
+  Firebase.setFloat("Temperature/Temperature",0);
+  Firebase.setString("Temperature/Time","");
 
   Firebase.setFloat("All Value/Humid 1",0);
   Firebase.setFloat("All Value/Humid 2",0);
   Firebase.setFloat("All Value/Percentage",0);
   Firebase.setFloat("All Value/Temperature",0);
   Firebase.setString("All Value/Time","");
+  delay(5000);
 }
 
 void loop() {
   while(Node.available() > 0){
-    float humid_1 = Node.parseFloat();
-    float humid_2 = Node.parseFloat();
-    float percentage = Node.parseFloat();
+    float soil_1 = Node.parseFloat();
+    float soil_2 = Node.parseFloat();
     float temperature_air = Node.parseFloat();
-    
+
+    float percentage = (abs(abs(((((soil_1 + soil_2) / 2) / 1023) * 100) - 100)));
     
     if(Node.read() == '\n'){
       time_t now = time(nullptr);
       String time1 = ctime(&now);
-      Firebase.setFloat("Humidity/Humid 1",humid_1);
-      Firebase.setFloat("Humidity/Humid 2",humid_2);
+      Firebase.setFloat("Humidity/Humid 1",soil_1);
+      Firebase.setFloat("Humidity/Humid 2",soil_2);
       Firebase.setFloat("Humidity/Percentage",percentage);
       Firebase.setString("Humidity/Time", time1);
+      
       Firebase.setFloat("Temperature/Temperature",temperature_air);
       Firebase.setString("Temperature/Time",time1);
 
-      Firebase.setFloat("All Value/Humid 1",humid_1);
-      Firebase.setFloat("All Value/Humid 2",humid_2);
+      Firebase.setFloat("All Value/Humid 1",soil_1);
+      Firebase.setFloat("All Value/Humid 2",soil_2);
       Firebase.setFloat("All Value/Percentage",percentage);
       Firebase.setFloat("All Value/Temperature",temperature_air);
       Firebase.setString("All Value/Time",time1);
-      
-      
 
+      StaticJsonBuffer<200> jsonBuffer;
+        JsonObject& root = jsonBuffer.createObject();
+        root["humid 1"] = soil_1;
+        root["humid 2"] = soil_2;
+        root["percentage"] = percentage;
+        root["temperature air"] = temperature_air;
+        root["time"] = time1;
+          
+        // append a new value to /logDHT
+        String name = Firebase.push("logDHT", root);
+      
       Serial.print("Humid 1: ");
-      Serial.println(humid_1);
+      Serial.println(soil_1);
       Serial.print("Humid 2: ");
-      Serial.println(humid_2);
+      Serial.println(soil_2);
       Serial.print("Percentage: ");
       Serial.println(percentage);
       Serial.print("Temperature: ");
@@ -88,5 +100,5 @@ void loop() {
       Serial.println(time1);
     }
   }
-  delay(100);
+  delay(2000);
 }
