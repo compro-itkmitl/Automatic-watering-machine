@@ -57,21 +57,12 @@ void loop() {
   soil_1 = analogRead(humidPIN_1);
   soil_2 = analogRead(humidPIN_2);
   temperature_air = dht.getTemperature();
-  delay(500);
   
-  ArduinoSerial.print('\n');
-  ArduinoSerial.print(soil_1);
-  ArduinoSerial.print('\n');
-  ArduinoSerial.print(soil_2);
-  ArduinoSerial.print('\n');
-  //ArduinoSerial.print(percentage());
-  //ArduinoSerial.print('\n');
-  ArduinoSerial.print(temperature_air);
-  ArduinoSerial.print('\n');
-  delay(500);
-  
-  if(percentage() <= 2.25 && percentage() >= 0){
-    for(wait=0; wait<800; wait++){
+  if(percentage() <= 2 && percentage() >= 0){
+    on_firebase();
+    ArduinoSerial.print(11);
+    ArduinoSerial.print('\n');
+    for(wait=0; wait<6000; wait++){
       temperature_air = dht.getTemperature();
       if((millis() - timer ) >= 1000){
         lcd.clear();
@@ -83,7 +74,10 @@ void loop() {
       Serial.println(wait);
     }
     
-    for(wait=0; wait<3000; wait++){
+    on_firebase();
+    ArduinoSerial.print(10);
+    ArduinoSerial.print('\n');
+    for(wait=0; wait<20000; wait++){
       temperature_air = dht.getTemperature();
       if((millis() - timer ) >= 1000){
         lcd.clear();
@@ -96,37 +90,15 @@ void loop() {
     }
   }
   
-  else if (percentage() <= 41.25 && percentage() >= 2.35){
-    for(wait=0; wait<800; wait++){
+  else if (percentage() <= 41 && percentage() > 2){
+    on_firebase();
+    ArduinoSerial.print(11);
+    ArduinoSerial.print('\n');
+    for(wait=0; wait<6000; wait++){
       temperature_air = dht.getTemperature();
       if((millis() - timer ) >= 1000){
         lcd.clear();
         print_humid("Low : ", percentage(), "%");
-        print_temp("Temp : ", temperature_air, "C");
-        timer = millis();
-      }
-      digitalWrite(PIN8_PumpSoil,LOW);
-      Serial.println(wait);
-    }
-    for(wait=0; wait<3000; wait++){
-      temperature_air = dht.getTemperature();
-      if((millis() - timer ) >= 1000){
-        lcd.clear();
-        print_humid("Low : ", percentage(), "%");
-        print_temp("Temp : ", temperature_air, "C");
-        timer = millis();
-      }
-      digitalWrite(PIN8_PumpSoil,HIGH);
-      Serial.println(wait);
-    }
-  }
-  
-  else if (percentage() <= 50.05 && percentage() >= 41.35){
-    for(wait=0; wait<800; wait++){
-      temperature_air = dht.getTemperature();
-      if((millis() - timer ) >= 1000){
-        lcd.clear();
-        print_humid("Normal : ", percentage(), "%");
         print_temp("Temp : ", temperature_air, "C");
         timer = millis();
       }
@@ -134,7 +106,42 @@ void loop() {
       Serial.println(wait);
     }
     
-    for(wait=0; wait<3000; wait++){
+    on_firebase();
+    ArduinoSerial.print(10);
+    ArduinoSerial.print('\n');
+    for(wait=0; wait<20000; wait++){
+      temperature_air = dht.getTemperature();
+      if((millis() - timer ) >= 1000){
+        lcd.clear();
+        print_humid("Low : ", percentage(), "%");
+        print_temp("Temp : ", temperature_air, "C");
+        timer = millis();
+      }
+      digitalWrite(PIN8_PumpSoil,HIGH);
+      Serial.println(wait);
+    }
+  }
+  
+  else if (percentage() <= 50 && percentage() > 41){
+    on_firebase();
+    ArduinoSerial.print(11);
+    ArduinoSerial.print('\n');
+    for(wait=0; wait<6000; wait++){
+      temperature_air = dht.getTemperature();
+      if((millis() - timer ) >= 1000){
+        lcd.clear();
+        print_humid("Normal : ", percentage(), "%");
+        print_temp("Temp : ", temperature_air, "C");
+        timer = millis();
+      }
+      digitalWrite(PIN8_PumpSoil,LOW);
+      Serial.println(wait);
+    }
+
+    on_firebase();
+    ArduinoSerial.print(10);
+    ArduinoSerial.print('\n');
+    for(wait=0; wait<20000; wait++){
       temperature_air = dht.getTemperature();
       if((millis() - timer ) >= 1000){
         lcd.clear();
@@ -147,7 +154,7 @@ void loop() {
     }
   }
   
-  else if (percentage() <= 56.01 && percentage() >= 50.15){
+  else if (percentage() <= 56 && percentage() > 50){
     if((millis() - timer ) >= 1000){
       lcd.clear();
       print_humid("Good : ", percentage(), "%");
@@ -155,6 +162,9 @@ void loop() {
       timer = millis();
     }
     digitalWrite(PIN8_PumpSoil,HIGH);
+    on_firebase();
+    ArduinoSerial.print(10);
+    ArduinoSerial.print('\n');
   }
   
   else{
@@ -165,11 +175,17 @@ void loop() {
       timer = millis();
     }
     digitalWrite(PIN8_PumpSoil,HIGH);
+    on_firebase();
+    ArduinoSerial.print(10);
+    ArduinoSerial.print('\n');
   } //End Algo Watering Soil
 
   //Algo Watering Spray
   if((millis() - timer2 ) >= 3000){
     if(temperature_air > 36){
+      on_firebase();
+      ArduinoSerial.print(21);
+      ArduinoSerial.print('\n');
       for(wait=0; wait<10000; wait++){
         temperature_air = dht.getTemperature();
         if((millis() - timer ) >= 1000){
@@ -181,7 +197,11 @@ void loop() {
         digitalWrite(PIN9_PumpSpray,LOW);
         Serial.println(wait);
       }
+
       digitalWrite(PIN9_PumpSpray,HIGH);
+      on_firebase();
+      ArduinoSerial.print(20);
+      ArduinoSerial.print('\n');
     }
     timer2 = millis();
   } //End Algo Watering Spray
@@ -207,3 +227,13 @@ float percentage(){
   float percent = (abs(abs(((average / 1023) * 100) - 100)));
   return percent;
 }
+
+int on_firebase(){
+  ArduinoSerial.print(soil_1);
+  ArduinoSerial.print('\n');
+  ArduinoSerial.print(soil_2);
+  ArduinoSerial.print('\n');
+  ArduinoSerial.print(temperature_air);
+  ArduinoSerial.print('\n');
+}
+
